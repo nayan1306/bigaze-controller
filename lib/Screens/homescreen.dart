@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:examiner_bigaze/Screens/profilescreen.dart';
 import 'package:examiner_bigaze/widgets/glasstile.dart';
 import 'package:flutter/material.dart';
 import 'package:examiner_bigaze/quizcreatepage.dart';
@@ -110,12 +111,12 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     GlassTile(
                       context,
-                      'Send Notification',
+                      'Profile Screen',
                       () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const SendNotificationPage(),
+                            builder: (context) => const ProfileScreen(),
                           ),
                         );
                       },
