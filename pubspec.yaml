@@ -69,6 +69,7 @@ flutter:
   - assets/icon/bigaze.png
   - assets/icon/GWqs.gif
   - assets/icon/splash_image.png
+  - assets/bg.gif
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

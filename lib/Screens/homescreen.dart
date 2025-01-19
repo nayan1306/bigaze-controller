@@ -35,13 +35,15 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
+      // extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           // Background GIF
           Positioned.fill(
             child: Image.asset(
-              './assets/icon/GWqs.gif', // Path to your GIF
+              './assets/bg.gif', // Path to your GIF
               fit: BoxFit.cover, // Make sure the GIF covers the screen
+              // colorBlendMode: BlendMode.darken,
             ),
           ),
           // Foreground Content

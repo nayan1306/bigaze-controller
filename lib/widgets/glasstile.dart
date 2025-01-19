@@ -53,17 +53,17 @@ Widget GlassTile(BuildContext context, String label, VoidCallback onPressed) {
                     ),
                   ),
                   // Text on top of the glass effect
-                  // Center(
-                  //   child: Text(
-                  //     label,
-                  //     style: const TextStyle(
-                  //       fontSize: 18,
-                  //       fontWeight: FontWeight.bold,
-                  //       letterSpacing: 2,
-                  //       color: Colors.white,
-                  //     ),
-                  //   ),
-                  // ),
+                  Center(
+                    child: Text(
+                      label,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
