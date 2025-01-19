@@ -67,6 +67,8 @@ flutter:
   assets:
   - assets/icon/time-management.png
   - assets/icon/bigaze.png
+  - assets/icon/GWqs.gif
+
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
