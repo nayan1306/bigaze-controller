@@ -8,9 +8,45 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:216830322809:android:cefc2049ccd018cb128ca8",
+        "android_client_info": {
+          "package_name": "com.bigaze.examiner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "216830322809-9ijpunohr02alpk4cus38m5s3apsp866.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASZlDDYcdU2E1d1mfrrNBDIzjfErQsq4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "216830322809-9ijpunohr02alpk4cus38m5s3apsp866.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "216830322809-6pek2jffrc8p6up9nvkitp3hh0esofa1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.turingstorm.bigaze"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:216830322809:android:358b2fe71f112ec7128ca8",
         "android_client_info": {
-          "package_name": "com.turingstorm.bigaze_examiner"
+          "package_name": "com.turingstorm.bigaze"
         }
       },
       "oauth_client": [
@@ -18,7 +54,7 @@
           "client_id": "216830322809-bd8ur767j1i61al4t30ooqe64ivft2gp.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.turingstorm.bigaze_examiner",
+            "package_name": "com.turingstorm.bigaze",
             "certificate_hash": "7bb2934fe62a2d83a89af169e456b6174552816e"
           }
         },
@@ -43,7 +79,7 @@
               "client_id": "216830322809-6pek2jffrc8p6up9nvkitp3hh0esofa1.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.turingstorm.bigaze_examiner"
+                "bundle_id": "com.turingstorm.bigaze"
               }
             }
           ]
@@ -79,7 +115,7 @@
               "client_id": "216830322809-6pek2jffrc8p6up9nvkitp3hh0esofa1.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.turingstorm.bigaze_examiner"
+                "bundle_id": "com.turingstorm.bigaze"
               }
             }
           ]

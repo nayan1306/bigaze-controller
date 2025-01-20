@@ -2,10 +2,11 @@ import 'dart:developer';
 
 import 'package:examiner_bigaze/Screens/authgate.dart';
 import 'package:examiner_bigaze/Screens/homescreen.dart';
+import 'package:examiner_bigaze/provider/authprovider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart'; // For state management
 import 'firebase/firebase_options.dart';
 
 void main() async {
@@ -22,7 +23,14 @@ void main() async {
     // You can show a dialog or notification in the app here
   });
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -46,7 +54,14 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(color: Colors.white),
         ),
       ),
-      home: const AuthGate(),
+      home: Consumer<AuthProvider>(
+        builder: (context, authProvider, _) {
+          // Dynamically show the login screen or home screen based on the login state
+          return authProvider.isLoggedIn
+              ? const HomeScreen()
+              : const LoginScreen();
+        },
+      ),
     );
   }
 }

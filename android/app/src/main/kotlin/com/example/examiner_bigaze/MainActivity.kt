@@ -1,4 +1,4 @@
-package com.turingstorm.bigaze_examiner
+package com.bigaze.examiner
 
 import io.flutter.embedding.android.FlutterActivity
 
