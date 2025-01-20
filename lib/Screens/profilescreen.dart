@@ -1,4 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:examiner_bigaze/Screens/authgate.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
@@ -22,6 +25,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isLoading = false;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  User? currentUser;
 
   // Options for multi-select dropdowns
   final List<String> _roleOptions = ['Teacher', 'Admin', 'Coordinator'];
@@ -42,6 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    currentUser = _firebaseAuth.currentUser;
     _fetchExistingProfile();
   }
 
@@ -50,20 +57,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() => isLoading = true);
 
     try {
-      // Replace with the current user's email to fetch their profile
-      const String email = 'sample@gmail.com'; // Replace with dynamic email
+      final User? currentUser = _firebaseAuth.currentUser;
+
+      if (currentUser == null) {
+        _showSnackbar('No user logged in!');
+        return;
+      }
+
+      // Populate fields with default values from the logged-in user
+      emailController.text = currentUser.email ?? '';
+      nameController.text = currentUser.displayName ?? '';
+      profilePictureController.text = currentUser.photoURL ??
+          'https://raw.githubusercontent.com/nayan1306/assets/refs/heads/main/teacher.webp';
+
+      // Fetch additional profile data from Firestore
       final querySnapshot = await _firestore
           .collection('teacher')
-          .where('email', isEqualTo: email)
+          .where('email', isEqualTo: currentUser.email)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         final data = querySnapshot.docs.first.data();
-        nameController.text = data['name'] ?? '';
-        emailController.text = data['email'] ?? '';
         phoneController.text = data['phone'] ?? '';
-        profilePictureController.text = data['profilePicture'] ??
-            'https://raw.githubusercontent.com/nayan1306/assets/refs/heads/main/teacher.webp';
         organizationController.text = data['organizationId'] ?? '';
         subscriptionStatus = data['subscriptionStatus'] ?? false;
         selectedRoles = List<String>.from(data['role'] ?? []);
@@ -178,7 +193,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile Management'),
+        backgroundColor: Colors.black26,
+        surfaceTintColor: const Color.fromARGB(255, 48, 48, 48),
+        leading: const Text(" "),
+        centerTitle: true,
+        title: RichText(
+          text: TextSpan(
+            children: [
+              const TextSpan(
+                text: '👋 Welcome, ',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(210, 255, 204, 20),
+                ),
+              ),
+              TextSpan(
+                text:
+                    '${currentUser?.displayName?.split(' ').first ?? 'User'}!',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await _firebaseAuth.signOut();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const SignInScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -220,8 +272,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: handleSubmit,
-                    child: const Text('Save Profile'),
+                    style: const ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(
+                          Color.fromARGB(184, 145, 255, 156)),
+                    ),
+                    child: const Text(
+                      'Save Profile',
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 0, 0, 0),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                    ),
                   ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await _firebaseAuth.signOut();
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()),
+                      );
+                    },
+                    style: const ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                            Color.fromARGB(185, 255, 82, 82))),
+                    child: const Text(
+                      "SIGN OUT",
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                    ),
+                  )
                 ],
               ),
             ),

@@ -15,12 +15,13 @@ class LoginScreen extends StatelessWidget {
           onPressed: () async {
             await authProvider.login();
           },
-          height: 50,
-          minWidth: 100,
-          color: Colors.red,
-          child: const Text(
-            'Google Sign-In',
-            style: TextStyle(color: Colors.white),
+          height: 40,
+          minWidth: 40,
+          color: const Color.fromARGB(105, 68, 68, 68),
+          child: Image.asset(
+            './assets/icon/google.png',
+            width: 40,
+            height: 60,
           ),
         ),
       ),
