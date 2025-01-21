@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:examiner_bigaze/Screens/proctor_parameters.dart';
 import 'package:examiner_bigaze/Screens/quiz_preview_page.dart';
 import 'package:flutter/material.dart';
 
@@ -232,6 +233,20 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                   );
                 },
                 child: const Text('Preview Quiz'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProctorParametersPage(
+                        examId: widget.examId,
+                        teacherDocId: widget.teacherDocId,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Set Proctor Parameters'),
               )
             ],
           ),
