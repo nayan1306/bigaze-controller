@@ -58,6 +58,19 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     GlassTile(
                       context,
+                      'Profile Screen',
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ProfileScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    GlassTile(
+                      context,
                       'Schedule Exam',
                       () {
                         Navigator.push(
@@ -108,19 +121,6 @@ class HomeScreen extends StatelessWidget {
                       },
                     ),
                     // temp
-                    const SizedBox(height: 20),
-                    GlassTile(
-                      context,
-                      'Profile Screen',
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ProfileScreen(),
-                          ),
-                        );
-                      },
-                    ),
                   ],
                 ),
               ),
