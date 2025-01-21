@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:examiner_bigaze/Screens/quizshowpage.dart';
+import 'package:examiner_bigaze/Screens/quiz_preview_page.dart';
 import 'package:flutter/material.dart';
 
 class CreateQuizPage extends StatefulWidget {
