@@ -58,7 +58,10 @@ class ExamListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Select Exam')),
+      appBar: AppBar(
+        title: const Text('Select Exam'),
+        // backgroundColor: Colors.blueAccent,
+      ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         // Fetching data
         future: fetchExams(),
@@ -73,25 +76,54 @@ class ExamListPage extends StatelessWidget {
           } else {
             final exams = snapshot.data!;
             return ListView.builder(
+              padding: const EdgeInsets.all(16.0),
               itemCount: exams.length,
               itemBuilder: (context, index) {
                 final exam = exams[index];
-                return ListTile(
-                  title: Text(exam['examName']),
-                  onTap: () {
-                    print('Exam tapped: ${exam['examName']}'); // Debug log
-                    // Navigate to the Create Quiz page with the selected examId
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CreateQuizPage(
-                          examId: exam['examId'],
-                          teacherDocId:
-                              exam['teacherDocId'], // Pass teacherDocId
-                        ),
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  elevation: 5,
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 12.0,
+                    ),
+                    leading: const Icon(
+                      Icons.assignment,
+                      color: Colors.blueAccent,
+                    ),
+                    title: Text(
+                      exam['examName'],
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
                       ),
-                    );
-                  },
+                    ),
+                    subtitle: Text(
+                      'Tap to create a quiz for this exam',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    onTap: () {
+                      print('Exam tapped: ${exam['examName']}'); // Debug log
+                      // Navigate to the Create Quiz page with the selected examId
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreateQuizPage(
+                            examId: exam['examId'],
+                            teacherDocId:
+                                exam['teacherDocId'], // Pass teacherDocId
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             );
