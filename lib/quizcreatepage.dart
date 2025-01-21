@@ -115,7 +115,6 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Questions:'),
               ...List.generate(questions.length, (index) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,14 +208,43 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                   ],
                 );
               }),
+              // buttons -------------------------------------------------------
               ElevatedButton(
                 onPressed: addQuestion,
-                child: const Text('Add Question'),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                  ),
+                  backgroundColor: Colors.transparent,
+                  side: const BorderSide(
+                      color: Colors.white,
+                      width: 2), // White border around the button
+                  padding: const EdgeInsets.all(
+                      14.0), // Makes the background transparent
+                ),
+                child: const Text(
+                  'Add Question',
+                  style: TextStyle(color: Colors.white), // White text color
+                ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: saveQuiz,
-                child: const Text('Save Quiz'),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                  ),
+                  backgroundColor: Colors.transparent,
+                  side: const BorderSide(
+                      color: Colors.white,
+                      width: 2), // White border around the button
+                  padding: const EdgeInsets.all(
+                      14.0), // Makes the background transparent
+                ),
+                child: const Text(
+                  'Save Quiz',
+                  style: TextStyle(color: Colors.white), // White text color
+                ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
@@ -232,7 +260,24 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                     ),
                   );
                 },
-                child: const Text('Preview Quiz'),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                  ),
+                  backgroundColor: Colors.transparent,
+                  side: const BorderSide(
+                      color: Colors.white,
+                      width: 2), // White border around the button
+                  padding: const EdgeInsets.all(
+                      14.0), // Makes the background transparent
+                ),
+                child: const Text(
+                  'Preview Quiz',
+                  style: TextStyle(color: Colors.white), // White text color
+                ),
+              ),
+              const SizedBox(
+                height: 20,
               ),
               ElevatedButton(
                 onPressed: () {
@@ -246,7 +291,21 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                     ),
                   );
                 },
-                child: const Text('Set Proctor Parameters'),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                  ),
+                  backgroundColor: Colors.transparent,
+                  side: const BorderSide(
+                      color: Colors.white,
+                      width: 2), // White border around the button
+                  padding: const EdgeInsets.all(
+                      14.0), // Makes the background transparent
+                ),
+                child: const Text(
+                  'Set Proctor Parameters',
+                  style: TextStyle(color: Colors.white), // White text color
+                ),
               )
             ],
           ),
