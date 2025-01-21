@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:examiner_bigaze/Screens/quizshowpage.dart';
 import 'package:flutter/material.dart';
 
 class CreateQuizPage extends StatefulWidget {
@@ -216,6 +217,22 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                 onPressed: saveQuiz,
                 child: const Text('Save Quiz'),
               ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to QuizPreviewPage with the examId and teacherDocId
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => QuizPreviewPage(
+                        examId: widget.examId,
+                        teacherDocId: widget.teacherDocId,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Preview Quiz'),
+              )
             ],
           ),
         ),
