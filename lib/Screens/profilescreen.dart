@@ -167,11 +167,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         decoration: BoxDecoration(
           color: const Color.fromARGB(255, 0, 0, 0),
           borderRadius: const BorderRadius.all(Radius.circular(10)),
-          border: Border.all(color: Colors.blue, width: 1),
+          border: Border.all(
+              color: const Color.fromARGB(255, 181, 181, 181), width: 1),
         ),
         buttonIcon: const Icon(
           Icons.arrow_drop_down,
-          color: Colors.blue,
+          color: Color.fromARGB(255, 180, 180, 180),
         ),
         buttonText: Text(
           selectedItems.isNotEmpty
@@ -239,6 +240,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  SizedBox(
+                      height: 90,
+                      width: 90,
+                      child: Image.network(currentUser!.photoURL.toString())),
                   _buildTextField('Name', nameController),
                   _buildTextField('Email (required)', emailController),
                   _buildTextField('Phone', phoneController),

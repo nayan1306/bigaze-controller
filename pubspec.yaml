@@ -45,6 +45,8 @@ dependencies:
   firebase_auth: ^5.4.0
   google_sign_in: ^6.2.2
   firebase_ui_auth: ^1.16.1
+  firebase_storage: ^12.4.0
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
@@ -76,6 +78,7 @@ flutter:
   - assets/icon/splash_image.png
   - assets/bg.gif
   - assets/icon/google.png
+  - assets/plogo.png
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
@@ -111,7 +114,7 @@ flutter:
 
 
 icons_launcher:
-  image_path: "assets/icon/time-management.png"
+  image_path: "assets/plogo.png"
   platforms:
     android:
       enable: true
