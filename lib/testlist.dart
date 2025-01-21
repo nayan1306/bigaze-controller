@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class TestListPage extends StatefulWidget {
@@ -10,24 +11,73 @@ class TestListPage extends StatefulWidget {
 
 class _TestListPageState extends State<TestListPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  // Fetch test entries from Firestore
-  Stream<QuerySnapshot> fetchTestEntries() {
-    return _firestore.collection('examiner').snapshots();
+  // Fetch exam entries from the "exams" sub-collection
+  Stream<QuerySnapshot> fetchExamEntries() async* {
+    final currentUser = _firebaseAuth.currentUser;
+
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No user logged in!')),
+      );
+      return;
+    }
+
+    // Get the teacher's document ID
+    final userDoc = await _firestore
+        .collection('teacher')
+        .where('email', isEqualTo: currentUser.email)
+        .get();
+
+    if (userDoc.docs.isNotEmpty) {
+      final teacherDocId = userDoc.docs.first.id;
+      yield* _firestore
+          .collection('teacher')
+          .doc(teacherDocId)
+          .collection('exams')
+          .snapshots();
+    }
   }
 
-  // Function to update test start status in Firestore
-  Future<void> updateTestStart(String testId, bool startStatus) async {
+  // Function to update the isLive status of an exam in Firestore
+  Future<void> updateIsLiveStatus(String examId, bool isLiveStatus) async {
     try {
-      await _firestore.collection('examiner').doc(testId).update({
-        'teststart': startStatus,
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Test status updated!')),
-      );
+      final currentUser = _firebaseAuth.currentUser;
+
+      if (currentUser == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No user logged in!')),
+        );
+        return;
+      }
+
+      // Get the teacher's document ID
+      final userDoc = await _firestore
+          .collection('teacher')
+          .where('email', isEqualTo: currentUser.email)
+          .get();
+
+      if (userDoc.docs.isNotEmpty) {
+        final teacherDocId = userDoc.docs.first.id;
+
+        // Update the isLive field
+        await _firestore
+            .collection('teacher')
+            .doc(teacherDocId)
+            .collection('exams')
+            .doc(examId)
+            .update({
+          'isLive': isLiveStatus,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Exam status updated!')),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error updating test status: $e')),
+        SnackBar(content: Text('Error updating exam status: $e')),
       );
     }
   }
@@ -36,10 +86,10 @@ class _TestListPageState extends State<TestListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Test Entries'),
+        title: const Text('Exam List'),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: fetchTestEntries(),
+        stream: fetchExamEntries(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -48,37 +98,39 @@ class _TestListPageState extends State<TestListPage> {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No test entries found.'));
+            return const Center(child: Text('No exams found.'));
           }
 
           // Data from Firestore
-          var testEntries = snapshot.data!.docs;
+          var examEntries = snapshot.data!.docs;
 
           return ListView.builder(
-            itemCount: testEntries.length,
+            itemCount: examEntries.length,
             itemBuilder: (context, index) {
-              var testData = testEntries[index];
-              bool testStart = testData['teststart'] ?? false;
-              String testId = testData.id;
-              String testName = testData['testname'] ?? 'N/A';
-              String testDescription = testData['testdescription'] ?? 'N/A';
-              String testSchedule =
-                  testData['testschedule']?.toDate().toString() ?? 'N/A';
+              var examData = examEntries[index];
+              String examId = examData.id;
+              String examName = examData['examName'] ?? 'N/A';
+              String examType = examData['examType'] ?? 'N/A';
+              int duration = examData['duration'] ?? 0;
+              String instructions = examData['instructions'] ?? 'N/A';
+              String startAt =
+                  examData['startAt']?.toDate().toString() ?? 'N/A';
+              bool isLive = examData['isLive'] ?? false;
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: ListTile(
-                  title: Text(testName),
+                  title: Text(examName),
                   subtitle: Text(
-                      'Scheduled: $testSchedule\nDescription: $testDescription'),
+                      'Type: $examType\nDuration: $duration minutes\nStart At: $startAt\nInstructions: $instructions'),
                   trailing: IconButton(
                     icon: Icon(
-                      testStart ? Icons.stop : Icons.play_arrow,
-                      color: testStart ? Colors.red : Colors.green,
+                      isLive ? Icons.stop : Icons.play_arrow,
+                      color: isLive ? Colors.red : Colors.green,
                     ),
                     onPressed: () {
-                      // Toggle test start status
-                      updateTestStart(testId, !testStart);
+                      // Toggle the isLive status
+                      updateIsLiveStatus(examId, !isLive);
                     },
                   ),
                 ),
