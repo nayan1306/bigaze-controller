@@ -3,7 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class CreateQuizPage extends StatefulWidget {
-  const CreateQuizPage({super.key});
+  final String examId; // Exam ID passed from ExamListPage
+  final String teacherDocId; // Teacher document ID passed from ExamListPage
+
+  const CreateQuizPage(
+      {super.key, required this.examId, required this.teacherDocId});
 
   @override
   _CreateQuizPageState createState() => _CreateQuizPageState();
@@ -12,22 +16,25 @@ class CreateQuizPage extends StatefulWidget {
 class _CreateQuizPageState extends State<CreateQuizPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Form controllers
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _maxMarksController = TextEditingController();
-  final _timeLimitController = TextEditingController();
-
   List<Map<String, dynamic>> questions = [];
 
   // Add a new question
   void addQuestion() {
     setState(() {
       questions.add({
-        "title": "",
-        "options": ["", "", "", ""],
-        "answer": "",
+        "question": "",
+        "options": {
+          "1": "",
+          "2": "",
+          "3": "",
+          "4": "",
+        },
+        "answer": 0,
+        "ansExplanation": "",
+        "difficulty": "medium",
+        "imageUrl": "",
         "marks": 0,
+        "tags": [],
       });
     });
   }
@@ -39,48 +46,59 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
     });
   }
 
+  // Update options for a question
+  void updateOption(int questionIndex, String optionKey, String value) {
+    setState(() {
+      questions[questionIndex]["options"][optionKey] = value;
+    });
+  }
+
   // Save quiz to Firestore
   Future<void> saveQuiz() async {
     try {
-      // Add quiz to Firestore
-      DocumentReference quizRef = await _firestore.collection('Quiz').add({
-        "title": _titleController.text,
-        "description": _descriptionController.text,
-        "maxMarks": int.parse(_maxMarksController.text),
-        "createdBy": "Admin", // Replace with the actual creator
-        "timeLimit": int.parse(_timeLimitController.text),
-        "isPublished": true, // You can make it dynamic
-        "visibility": "public", // You can make it dynamic
-        "createdAt": FieldValue.serverTimestamp(),
-      });
+      // Use dynamic teacherDocId passed from ExamListPage
+      DocumentReference examRef = _firestore
+          .collection('teacher')
+          .doc(widget.teacherDocId) // Use dynamic teacherDocId
+          .collection('exams')
+          .doc(widget.examId);
 
-      log("Quiz added with ID: ${quizRef.id}");
+      // If the exam document doesn't exist, create it (if needed)
+      if (!(await examRef.get()).exists) {
+        await examRef.set({
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
 
-      // Add questions to the 'Questions' subcollection
+      // Add questions to the 'questions' sub-collection
       for (var question in questions) {
-        await _firestore
-            .collection('Quiz/${quizRef.id}/Questions')
-            .add(question);
-        log("Question added to quiz ${quizRef.id}");
+        await examRef.collection('questions').add({
+          "question": question["question"],
+          "options": question["options"],
+          "answer": question["answer"],
+          "ansExplanation": question["ansExplanation"],
+          "difficulty": question["difficulty"],
+          "imageUrl": question["imageUrl"],
+          "marks": question["marks"],
+          "tags": question["tags"],
+        });
+        log("Question added to exam ${widget.examId}");
       }
 
       // Clear fields after saving
       setState(() {
-        _titleController.clear();
-        _descriptionController.clear();
-        _maxMarksController.clear();
-        _timeLimitController.clear();
         questions.clear();
       });
 
       // Show a confirmation message
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Quiz added successfully!')),
+        const SnackBar(content: Text('Questions added successfully!')),
       );
     } catch (e) {
       log("Error saving quiz: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to add quiz')),
+        const SnackBar(content: Text('Failed to add questions')),
       );
     }
   }
@@ -88,48 +106,13 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Custom Quiz')),
+      appBar: AppBar(title: const Text('Add Questions to Quiz')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Quiz Title',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Description',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _maxMarksController,
-                decoration: const InputDecoration(
-                  labelText: 'Max Marks',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _timeLimitController,
-                decoration: const InputDecoration(
-                  labelText: 'Time Limit (in minutes)',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 20),
-              // Add Questions
               const Text('Questions:'),
               ...List.generate(questions.length, (index) {
                 return Column(
@@ -142,38 +125,64 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                         border: OutlineInputBorder(),
                       ),
                       onChanged: (value) {
-                        updateQuestion(index, "title", value);
+                        updateQuestion(index, "question", value);
                       },
                     ),
                     const SizedBox(height: 10),
-                    ...List.generate(4, (optIndex) {
+                    ...questions[index]["options"].keys.map((key) {
                       return TextField(
                         decoration: InputDecoration(
-                          labelText: 'Option ${optIndex + 1}',
+                          labelText: 'Option $key',
                           border: const OutlineInputBorder(),
                         ),
                         onChanged: (value) {
-                          updateQuestion(index, "options", [
-                            ...questions[index]["options"]..[optIndex] = value
-                          ]);
+                          updateOption(index, key, value);
                         },
                       );
-                    }),
+                    }).toList(),
                     const SizedBox(height: 10),
                     TextField(
                       decoration: const InputDecoration(
-                        labelText: 'Correct Answer',
+                        labelText: 'Correct Answer (Option Number)',
                         border: OutlineInputBorder(),
                       ),
+                      keyboardType: TextInputType.number,
                       onChanged: (value) {
-                        updateQuestion(index, "answer", value);
+                        updateQuestion(index, "answer", int.parse(value));
                       },
                     ),
                     const SizedBox(height: 10),
                     TextField(
-                      controller: TextEditingController(
-                        text: questions[index]["marks"].toString(),
+                      decoration: const InputDecoration(
+                        labelText: 'Answer Explanation',
+                        border: OutlineInputBorder(),
                       ),
+                      onChanged: (value) {
+                        updateQuestion(index, "ansExplanation", value);
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      decoration: const InputDecoration(
+                        labelText: 'Difficulty (easy, medium, hard)',
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (value) {
+                        updateQuestion(index, "difficulty", value);
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      decoration: const InputDecoration(
+                        labelText: 'Image URL',
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (value) {
+                        updateQuestion(index, "imageUrl", value);
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
                       decoration: const InputDecoration(
                         labelText: 'Marks',
                         border: OutlineInputBorder(),
@@ -181,6 +190,17 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                       keyboardType: TextInputType.number,
                       onChanged: (value) {
                         updateQuestion(index, "marks", int.parse(value));
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      decoration: const InputDecoration(
+                        labelText: 'Tags (comma separated)',
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (value) {
+                        updateQuestion(index, "tags",
+                            value.split(',').map((tag) => tag.trim()).toList());
                       },
                     ),
                     const SizedBox(height: 20),

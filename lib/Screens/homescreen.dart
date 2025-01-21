@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:examiner_bigaze/Screens/profilescreen.dart';
+import 'package:examiner_bigaze/Screens/questiondesigner.dart';
 import 'package:examiner_bigaze/widgets/glasstile.dart';
 import 'package:flutter/material.dart';
 import 'package:examiner_bigaze/quizcreatepage.dart';
@@ -102,7 +103,7 @@ class HomeScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const CreateQuizPage(),
+                            builder: (context) => ExamListPage(),
                           ),
                         );
                       },
