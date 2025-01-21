@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:examiner_bigaze/Screens/profilescreen.dart';
 import 'package:examiner_bigaze/Screens/questiondesigner.dart';
 import 'package:examiner_bigaze/widgets/glasstile.dart';
@@ -17,8 +16,8 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         leading: Image.asset("assets/icon/splash_image.png"),
         title: const Text(
-          "E X A M   M A N A G E R",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          "BiG∆ZE MΞNTOR",
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 4),
         ),
         backgroundColor: Colors.black.withOpacity(0.8),
         elevation: 0,
