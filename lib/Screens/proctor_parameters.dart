@@ -18,15 +18,54 @@ class ProctorParametersPage extends StatefulWidget {
 class _ProctorParametersPageState extends State<ProctorParametersPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  final TextEditingController _prohibitedObjectsController =
-      TextEditingController();
-  final TextEditingController _prohibitedSoundsController =
-      TextEditingController();
+  // Controllers for the input lists
+  List<TextEditingController> prohibitedObjectsControllers = [];
+  List<TextEditingController> prohibitedSoundsControllers = [];
+
+  // Fetch the existing proctor parameters from Firestore
+  Future<void> fetchProctorParameters() async {
+    try {
+      DocumentReference proctorParametersRef = _firestore
+          .collection('teacher')
+          .doc(widget.teacherDocId)
+          .collection('exams')
+          .doc(widget.examId)
+          .collection('proctorParameters')
+          .doc('proctorParameters');
+
+      DocumentSnapshot docSnapshot = await proctorParametersRef.get();
+
+      if (docSnapshot.exists) {
+        Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
+
+        // Set the values in the text controllers if they exist
+        if (data['prohibitedObjects'] != null) {
+          List<String> prohibitedObjects =
+              List<String>.from(data['prohibitedObjects']);
+          setState(() {
+            prohibitedObjectsControllers = prohibitedObjects
+                .map((e) => TextEditingController(text: e))
+                .toList();
+          });
+        }
+        if (data['prohibitedSounds'] != null) {
+          List<String> prohibitedSounds =
+              List<String>.from(data['prohibitedSounds']);
+          setState(() {
+            prohibitedSoundsControllers = prohibitedSounds
+                .map((e) => TextEditingController(text: e))
+                .toList();
+          });
+        }
+      }
+    } catch (e) {
+      print('Error fetching proctor parameters: $e');
+    }
+  }
 
   // Save proctor parameters to Firestore
   Future<void> saveProctorParameters() async {
     try {
-      // Reference to the proctorParameters document under the specific exam
       DocumentReference proctorParametersRef = _firestore
           .collection('teacher')
           .doc(widget.teacherDocId)
@@ -36,27 +75,24 @@ class _ProctorParametersPageState extends State<ProctorParametersPage> {
           .doc('proctorParameters');
 
       // Get the current data from the text fields
-      List<String> prohibitedObjects = _prohibitedObjectsController.text
-          .split(',') // Split by commas to create a list
-          .map((e) => e.trim())
+      List<String> prohibitedObjects = prohibitedObjectsControllers
+          .map((e) => e.text.trim())
+          .where((e) => e.isNotEmpty)
           .toList();
-      List<String> prohibitedSounds = _prohibitedSoundsController.text
-          .split(',') // Split by commas to create a list
-          .map((e) => e.trim())
+      List<String> prohibitedSounds = prohibitedSoundsControllers
+          .map((e) => e.text.trim())
+          .where((e) => e.isNotEmpty)
           .toList();
 
-      // Set the document data
       await proctorParametersRef.set({
         'prohibitedObjects': prohibitedObjects,
         'prohibitedSounds': prohibitedSounds,
       });
 
-      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Proctor parameters saved successfully!')),
       );
     } catch (e) {
-      // Handle any errors that occur during saving
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to save proctor parameters')),
       );
@@ -64,38 +100,153 @@ class _ProctorParametersPageState extends State<ProctorParametersPage> {
     }
   }
 
+  // Add new input field
+  void addNewProhibitedObject() {
+    setState(() {
+      prohibitedObjectsControllers.add(TextEditingController());
+    });
+  }
+
+  void addNewProhibitedSound() {
+    setState(() {
+      prohibitedSoundsControllers.add(TextEditingController());
+    });
+  }
+
+  // Remove input field
+  void removeProhibitedObject(int index) {
+    setState(() {
+      prohibitedObjectsControllers.removeAt(index);
+    });
+  }
+
+  void removeProhibitedSound(int index) {
+    setState(() {
+      prohibitedSoundsControllers.removeAt(index);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProctorParameters();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Proctor Parameters')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Prohibited Objects (comma separated):'),
-            TextField(
-              controller: _prohibitedObjectsController,
-              decoration: const InputDecoration(
-                labelText: 'Enter prohibited objects',
-                border: OutlineInputBorder(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Prohibited Objects:',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
-            ),
-            const SizedBox(height: 16),
-            const Text('Prohibited Sounds (comma separated):'),
-            TextField(
-              controller: _prohibitedSoundsController,
-              decoration: const InputDecoration(
-                labelText: 'Enter prohibited sounds',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 8),
+              ...List.generate(prohibitedObjectsControllers.length, (index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: TextField(
+                            controller: prohibitedObjectsControllers[index],
+                            decoration: const InputDecoration(
+                              labelText: 'Enter prohibited object',
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 16),
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon:
+                            const Icon(Icons.remove_circle, color: Colors.red),
+                        onPressed: () => removeProhibitedObject(index),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+              ElevatedButton.icon(
+                onPressed: addNewProhibitedObject,
+                icon: const Icon(Icons.add),
+                label: const Text(
+                  'Add Another Object',
+                  style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.all(10.0),
+                  backgroundColor: const Color.fromARGB(231, 76, 174, 95),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: saveProctorParameters,
-              child: const Text('Save Proctor Parameters'),
-            ),
-          ],
+              const SizedBox(height: 20),
+              const Text(
+                'Prohibited Sounds:',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              const SizedBox(height: 8),
+              ...List.generate(prohibitedSoundsControllers.length, (index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: TextField(
+                            controller: prohibitedSoundsControllers[index],
+                            decoration: const InputDecoration(
+                              labelText: 'Enter prohibited sound',
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 16),
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon:
+                            const Icon(Icons.remove_circle, color: Colors.red),
+                        onPressed: () => removeProhibitedSound(index),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+              ElevatedButton.icon(
+                onPressed: addNewProhibitedSound,
+                icon: const Icon(Icons.add),
+                label: const Text(
+                  'Add Another Sound',
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.all(10.0),
+                  backgroundColor: const Color.fromARGB(231, 76, 174, 95),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: saveProctorParameters,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 32.0),
+                  ),
+                  child: const Text('Save Proctor Parameters',
+                      style: TextStyle(fontSize: 16)),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
