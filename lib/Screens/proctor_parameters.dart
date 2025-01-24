@@ -177,14 +177,15 @@ class _ProctorParametersPageState extends State<ProctorParametersPage> {
               }),
               ElevatedButton.icon(
                 onPressed: addNewProhibitedObject,
-                icon: const Icon(Icons.add),
+                icon: const Icon(Icons.add,
+                    color: Color.fromARGB(255, 255, 255, 255)),
                 label: const Text(
                   'Add Another Object',
                   style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
                 ),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(10.0),
-                  backgroundColor: const Color.fromARGB(231, 76, 174, 95),
+                  padding: const EdgeInsets.all(6.0),
+                  backgroundColor: const Color.fromARGB(231, 253, 157, 255),
                 ),
               ),
               const SizedBox(height: 20),
@@ -223,14 +224,17 @@ class _ProctorParametersPageState extends State<ProctorParametersPage> {
               }),
               ElevatedButton.icon(
                 onPressed: addNewProhibitedSound,
-                icon: const Icon(Icons.add),
+                icon: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
                 label: const Text(
                   'Add Another Sound',
                   style: TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(10.0),
-                  backgroundColor: const Color.fromARGB(231, 76, 174, 95),
+                  padding: const EdgeInsets.all(7.0),
+                  backgroundColor: const Color.fromARGB(231, 250, 156, 255),
                 ),
               ),
               const SizedBox(height: 20),

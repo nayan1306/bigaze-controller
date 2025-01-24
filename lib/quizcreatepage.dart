@@ -209,104 +209,115 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                 );
               }),
               // buttons -------------------------------------------------------
-              ElevatedButton(
-                onPressed: addQuestion,
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: addQuestion,
+                  icon: const Icon(Icons.add, color: Colors.white),
+                  label: const Text(
+                    'Add Question',
+                    style: TextStyle(color: Colors.white),
                   ),
-                  backgroundColor: Colors.transparent,
-                  side: const BorderSide(
-                      color: Colors.white,
-                      width: 2), // White border around the button
-                  padding: const EdgeInsets.all(
-                      14.0), // Makes the background transparent
-                ),
-                child: const Text(
-                  'Add Question',
-                  style: TextStyle(color: Colors.white), // White text color
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    backgroundColor: const Color.fromARGB(
+                        255, 154, 178, 104), // Green for Add
+                    padding: const EdgeInsets.all(14.0),
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: saveQuiz,
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: saveQuiz,
+                  icon: const Icon(Icons.save, color: Colors.white),
+                  label: const Text('Save Quiz',
+                      style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    backgroundColor: const Color.fromARGB(
+                        255, 129, 198, 255), // Blue for Save
+                    padding: const EdgeInsets.all(14.0),
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                  backgroundColor: Colors.transparent,
-                  side: const BorderSide(
-                      color: Colors.white,
-                      width: 2), // White border around the button
-                  padding: const EdgeInsets.all(
-                      14.0), // Makes the background transparent
-                ),
-                child: const Text(
-                  'Save Quiz',
-                  style: TextStyle(color: Colors.white), // White text color
                 ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  // Navigate to QuizPreviewPage with the examId and teacherDocId
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => QuizPreviewPage(
-                        examId: widget.examId,
-                        teacherDocId: widget.teacherDocId,
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => QuizPreviewPage(
+                          examId: widget.examId,
+                          teacherDocId: widget.teacherDocId,
+                        ),
                       ),
+                    );
+                  },
+                  icon: const Icon(Icons.preview, color: Colors.white),
+                  label: const Text('Preview Quiz',
+                      style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                    backgroundColor: const Color.fromARGB(
+                        255, 253, 198, 110), // Orange for Preview
+                    padding: const EdgeInsets.all(14.0),
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                  backgroundColor: Colors.transparent,
-                  side: const BorderSide(
-                      color: Colors.white,
-                      width: 2), // White border around the button
-                  padding: const EdgeInsets.all(
-                      14.0), // Makes the background transparent
-                ),
-                child: const Text(
-                  'Preview Quiz',
-                  style: TextStyle(color: Colors.white), // White text color
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProctorParametersPage(
-                        examId: widget.examId,
-                        teacherDocId: widget.teacherDocId,
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProctorParametersPage(
+                          examId: widget.examId,
+                          teacherDocId: widget.teacherDocId,
+                        ),
                       ),
+                    );
+                  },
+                  icon: const Icon(Icons.settings, color: Colors.white),
+                  label: const Text('Set Proctor Parameters',
+                      style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                    backgroundColor: const Color.fromARGB(
+                        255, 239, 150, 255), // Purple for Settings
+                    padding: const EdgeInsets.all(14.0),
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                  backgroundColor: Colors.transparent,
-                  side: const BorderSide(
-                      color: Colors.white,
-                      width: 2), // White border around the button
-                  padding: const EdgeInsets.all(
-                      14.0), // Makes the background transparent
                 ),
-                child: const Text(
-                  'Set Proctor Parameters',
-                  style: TextStyle(color: Colors.white), // White text color
-                ),
-              )
+              ),
             ],
           ),
         ),
