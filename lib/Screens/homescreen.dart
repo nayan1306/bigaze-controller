@@ -4,7 +4,7 @@ import 'package:examiner_bigaze/widgets/glasstile.dart';
 import 'package:flutter/material.dart';
 import 'package:examiner_bigaze/quizmanager.dart';
 import 'package:examiner_bigaze/sendnotificationpage.dart';
-import 'package:examiner_bigaze/testentry.dart';
+import 'package:examiner_bigaze/schedule_exam_page.dart';
 import 'package:examiner_bigaze/testlist.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -75,7 +75,7 @@ class HomeScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const TestEntryPage(),
+                            builder: (context) => const ScheduleExamPage(),
                           ),
                         );
                       },
