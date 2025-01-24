@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 
+import 'widgets/custom_submit_button.dart';
+
 class ScheduleExamPage extends StatefulWidget {
   const ScheduleExamPage({super.key});
 
@@ -58,8 +60,11 @@ class _ScheduleExamPageState extends State<ScheduleExamPage> {
         'isLive': _isLive,
       });
 
-      _showSnackBar('Exam added successfully!');
+      _showSnackBar('Exam scheduled');
       _clearForm();
+
+      // Navigate back to the home screen after success
+      Navigator.pop(context);
     } catch (e) {
       _showSnackBar('Error adding exam data: $e');
     }
@@ -146,7 +151,10 @@ class _ScheduleExamPageState extends State<ScheduleExamPage> {
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.lightGreenAccent,
+      ),
     );
   }
 
@@ -265,7 +273,7 @@ class _ScheduleExamPageState extends State<ScheduleExamPage> {
               ),
               const SizedBox(height: 16),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   const Text('Is Live:'),
                   Switch(
@@ -279,12 +287,12 @@ class _ScheduleExamPageState extends State<ScheduleExamPage> {
                 ],
               ),
               const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _addExamData,
-                  child: const Text('Submit'),
-                ),
+              CustomButton(
+                onPressed: _addExamData,
+                text: 'Submit',
+                color: const Color.fromARGB(255, 172, 255, 175),
+                textColor: const Color.fromARGB(255, 67, 67, 67),
+                borderRadius: 16.0,
               ),
             ],
           ),
