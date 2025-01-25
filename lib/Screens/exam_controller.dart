@@ -46,6 +46,26 @@ class _ExamControllerScreenState extends State<ExamControllerScreen> {
     }
   }
 
+  // Method to stop the live exam
+  Future<void> stopLiveExam(String teacherDocId, String examId) async {
+    try {
+      await _firestore
+          .collection('teacher')
+          .doc(teacherDocId)
+          .collection('exams')
+          .doc(examId)
+          .update({'isLive': false});
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Exam stopped successfully.')),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error stopping exam: $error')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
@@ -69,9 +89,11 @@ class _ExamControllerScreenState extends State<ExamControllerScreen> {
           }
 
           // If live exam is found, show its details
-          final examData = snapshot.data!.data() as Map<String, dynamic>;
+          final examDoc = snapshot.data!;
+          final examData = examDoc.data() as Map<String, dynamic>;
           final liveExamName =
               examData['examName'] ?? 'Live exam name unavailable';
+          final teacherDocId = examDoc.reference.parent.parent!.id;
 
           return Center(
             child: Column(
@@ -79,6 +101,7 @@ class _ExamControllerScreenState extends State<ExamControllerScreen> {
               children: [
                 SizedBox(height: h * 0.04),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       " $liveExamName",
@@ -87,9 +110,32 @@ class _ExamControllerScreenState extends State<ExamControllerScreen> {
                       ),
                       maxLines: 1,
                     ),
-                    Image.asset('./assets/icon/ilve.gif', width: w * 0.2),
+                    Image.asset('./assets/icon/live.gif', width: w * 0.2),
+                    SizedBox(
+                      width: w * 0.1,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        stopLiveExam(teacherDocId, examDoc.id);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.all(
+                            6), // Removes padding around the text
+                        minimumSize:
+                            const Size(0, 0), // Ensures no minimum size
+                      ),
+                      child: const Text(
+                        'STOP',
+                        style: TextStyle(
+                          color: Colors.redAccent,
+                          fontSize: 16, // Adjust font size if needed
+                        ),
+                      ),
+                    ),
                   ],
                 ),
+
+                // Add any additional UI here
               ],
             ),
           );
