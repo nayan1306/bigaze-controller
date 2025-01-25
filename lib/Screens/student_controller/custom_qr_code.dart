@@ -20,10 +20,10 @@ class CustomQrCode extends StatelessWidget {
             width: 320,
             height: 320,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 colors: [
-                  const Color.fromARGB(255, 195, 160, 255),
-                  Colors.purple.shade300,
+                  Color.fromARGB(147, 236, 225, 255),
+                  Color.fromARGB(147, 240, 155, 255),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -31,7 +31,8 @@ class CustomQrCode extends StatelessWidget {
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.purple.withOpacity(0.3),
+                  color:
+                      const Color.fromARGB(46, 155, 39, 176).withOpacity(0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 6),
                 ),

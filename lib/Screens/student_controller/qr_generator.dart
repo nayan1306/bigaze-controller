@@ -21,8 +21,18 @@ class QrCodeGenerator extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: CustomQrCode(
-            data: userData.toString(), // Pass the JSON as a string
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CustomQrCode(
+                data: userData.toString(), // Pass the JSON as a string
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {},
+                child: const Text('Share QR Code'),
+              ),
+            ],
           ),
         ),
       ),

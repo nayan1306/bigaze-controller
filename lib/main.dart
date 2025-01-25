@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:examiner_bigaze/Screens/authgate.dart';
 import 'package:examiner_bigaze/Screens/homescreen.dart';
 import 'package:examiner_bigaze/provider/authprovider.dart';
