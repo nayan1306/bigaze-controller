@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:examiner_bigaze/Screens/student_controller/add_group.dart';
+import 'package:examiner_bigaze/Screens/student_controller/qr_generator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -78,6 +79,11 @@ class _StudentControllerState extends State<StudentController> {
                 IconButton(
                   onPressed: () {
                     // Action for QR code button
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const QrCodeGenerator()),
+                    );
                   },
                   icon: const Icon(Icons.qr_code),
                 ),
