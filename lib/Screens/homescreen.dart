@@ -82,6 +82,20 @@ class HomeScreen extends StatelessWidget {
                         );
                       },
                     ),
+
+                    const SizedBox(height: 20),
+                    GlassTile(
+                      context,
+                      'Create Quiz',
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ExamListPage(),
+                          ),
+                        );
+                      },
+                    ),
                     const SizedBox(height: 20),
                     GlassTile(
                       context,
@@ -98,16 +112,17 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     GlassTile(
                       context,
-                      'Create Quiz',
+                      'Students',
                       () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ExamListPage(),
+                            builder: (context) => const TestListPage(),
                           ),
                         );
                       },
                     ),
+
                     const SizedBox(height: 20),
                     GlassTile(
                       context,

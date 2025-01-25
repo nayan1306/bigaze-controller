@@ -136,6 +136,11 @@ class _ExamControllerScreenState extends State<ExamControllerScreen> {
                 ),
 
                 // Add any additional UI here
+
+                ElevatedButton(
+                  onPressed: () {},
+                  child: const Text("Student Proctor tiles"),
+                )
               ],
             ),
           );
