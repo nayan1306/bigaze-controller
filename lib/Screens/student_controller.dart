@@ -1,4 +1,4 @@
-import 'package:examiner_bigaze/Screens/student_controller/add_mail.dart';
+import 'package:examiner_bigaze/Screens/student_controller/add_group.dart';
 import 'package:flutter/material.dart';
 
 class StudentController extends StatefulWidget {
@@ -29,17 +29,15 @@ class _StudentControllerState extends State<StudentController> {
                 ),
                 IconButton(
                   onPressed: () {
-                    // Action for group add button
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const AddGroup()),
+                    );
                   },
                   icon: const Icon(Icons.group_add),
                 ),
                 IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const AddMail()),
-                    );
-                  },
+                  onPressed: () {},
                   icon: const Icon(Icons.mail),
                 ),
                 IconButton(

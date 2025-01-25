@@ -4,27 +4,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class AddMail extends StatefulWidget {
-  const AddMail({super.key});
+class AddGroup extends StatefulWidget {
+  const AddGroup({super.key});
 
   @override
-  State<AddMail> createState() => _AddMailState();
+  State<AddGroup> createState() => _AddMailState();
 }
 
-class _AddMailState extends State<AddMail> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
+class _AddMailState extends State<AddGroup> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  final List<Map<String, String>> _studentsToAdd =
-      []; // List to store selected students
-  Map<String, List<Map<String, dynamic>>> _studentsByClass =
-      {}; // Grouped students by class/division
+  final List<Map<String, String>> _studentsToAdd = [];
+  Map<String, List<Map<String, dynamic>>> _studentsByClass = {};
 
   String? teacherDocId;
 
-  // Method to fetch the teacher's document ID
   Future<void> _fetchTeacherDocId() async {
     final currentUser = _firebaseAuth.currentUser;
     if (currentUser == null) {
@@ -34,7 +29,6 @@ class _AddMailState extends State<AddMail> {
       return;
     }
 
-    // Fetch teacher's document ID
     final userDoc = await _firestore
         .collection('teacher')
         .where('email', isEqualTo: currentUser.email)
@@ -47,21 +41,22 @@ class _AddMailState extends State<AddMail> {
     }
   }
 
-  // Method to fetch all students and group by class
-  // Method to fetch all students and group by class
+  // Optimized method to fetch and group students by class
   Future<void> _fetchStudents() async {
-    final studentsSnapshot = await _firestore.collection('students').get();
+    final studentsSnapshot = await _firestore
+        .collection('students')
+        .where('isActive',
+            isEqualTo: true) // Optimized: Only fetch active students
+        .get();
+
     log('Fetched Students: ${studentsSnapshot.docs.length} students found.');
 
-    // Group students by class
     Map<String, List<Map<String, dynamic>>> groupedStudents = {};
     for (var doc in studentsSnapshot.docs) {
       final studentData = doc.data();
-      log('Student Data: ${studentData.toString()}'); // Log student data
+      log('Student Data: ${studentData.toString()}');
 
-      // Convert class to String if it's an integer
-      final className =
-          studentData['class'].toString(); // Ensure it's treated as String
+      final className = studentData['class'].toString();
 
       if (!groupedStudents.containsKey(className)) {
         groupedStudents[className] = [];
@@ -77,11 +72,10 @@ class _AddMailState extends State<AddMail> {
 
     setState(() {
       _studentsByClass = groupedStudents;
-      log('Grouped Students: $_studentsByClass'); // Log grouped students
+      log('Grouped Students: $_studentsByClass');
     });
   }
 
-  // Method to add selected students
   Future<void> _addStudents() async {
     if (_studentsToAdd.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -97,8 +91,7 @@ class _AddMailState extends State<AddMail> {
       for (var student in _studentsToAdd) {
         final docRef =
             collectionRef.doc(teacherDocId).collection('students').doc();
-        batch.set(
-            docRef, student); // Add students under the teacher's document ID
+        batch.set(docRef, student);
       }
 
       await batch.commit();
@@ -108,7 +101,7 @@ class _AddMailState extends State<AddMail> {
       );
 
       setState(() {
-        _studentsToAdd.clear(); // Clear the selected students
+        _studentsToAdd.clear();
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -120,26 +113,30 @@ class _AddMailState extends State<AddMail> {
   @override
   void initState() {
     super.initState();
-    _fetchTeacherDocId(); // Fetch the teacher's document ID on init
-    _fetchStudents(); // Fetch the students from Firestore
+    _fetchTeacherDocId();
+    _fetchStudents();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Add Students'),
+        automaticallyImplyLeading: false,
+        title: const Text(
+          'Select Your Scholars',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            letterSpacing: 1.2,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Select Students to Add:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
             const SizedBox(height: 16),
             _studentsByClass.isEmpty
                 ? const CircularProgressIndicator()
@@ -151,15 +148,21 @@ class _AddMailState extends State<AddMail> {
                       final studentsInClass = _studentsByClass[className]!;
 
                       return ExpansionTile(
+                        backgroundColor: Colors.blueGrey.shade700,
                         title: Text(
-                          'Cohort : $className',
+                          'Cohort: $className',
                           style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
                         ),
                         children: studentsInClass.map((student) {
                           return ListTile(
-                            title: Text(student['name'] ?? 'No Name'),
-                            subtitle: Text(student['email'] ?? 'No Email'),
+                            tileColor: Colors.blueGrey.shade800,
+                            title: Text(student['name'] ?? 'No Name',
+                                style: const TextStyle(color: Colors.white)),
+                            subtitle: Text(student['email'] ?? 'No Email',
+                                style: const TextStyle(color: Colors.white70)),
                             trailing: Checkbox(
                               value: _studentsToAdd
                                   .any((s) => s['id'] == student['id']),
@@ -190,13 +193,31 @@ class _AddMailState extends State<AddMail> {
               children: [
                 ElevatedButton(
                   onPressed: _addStudents,
-                  child: const Text('Add Selected Students'),
-                ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        const Color.fromARGB(255, 232, 255, 225), // Neon purple
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24.0, vertical: 12.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(8.0), // Rounded corners
+                    ),
+                  ),
+                  child: const Text(
+                    'Add Selected Students',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    ),
+                  ),
+                )
               ],
             ),
           ],
         ),
       ),
+      backgroundColor: Colors.black,
     );
   }
 }
