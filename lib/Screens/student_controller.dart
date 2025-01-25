@@ -1,3 +1,4 @@
+import 'package:examiner_bigaze/Screens/student_controller/add_mail.dart';
 import 'package:flutter/material.dart';
 
 class StudentController extends StatefulWidget {
@@ -34,7 +35,10 @@ class _StudentControllerState extends State<StudentController> {
                 ),
                 IconButton(
                   onPressed: () {
-                    // Action for person add button
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const AddMail()),
+                    );
                   },
                   icon: const Icon(Icons.mail),
                 ),
