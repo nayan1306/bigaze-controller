@@ -23,12 +23,13 @@ class HomeScreen extends StatelessWidget {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, color: Colors.white),
+            icon:
+                const Icon(Icons.account_circle_outlined, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const QuizManager(),
+                  builder: (context) => const ProfileScreen(),
                 ),
               );
             },
@@ -57,7 +58,7 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     GlassTile(
                       context,
-                      'Profile Screen',
+                      'Exam Controller',
                       () {
                         Navigator.push(
                           context,
