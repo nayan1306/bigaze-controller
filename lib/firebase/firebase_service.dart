@@ -5,27 +5,28 @@ class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  Future<String?> fetchTeacherDocId() async {
+  // Fetch both teacher's document ID and active students in a single request
+  Future<Map<String, dynamic>> fetchTeacherAndStudents() async {
     final currentUser = _firebaseAuth.currentUser;
     if (currentUser == null) {
-      return null;
+      throw Exception('No user logged in!');
     }
 
-    final userDoc = await _firestore
+    // Fetch teacher document ID
+    final teacherSnapshot = await _firestore
         .collection('teacher')
         .where('email', isEqualTo: currentUser.email)
         .get();
 
-    if (userDoc.docs.isNotEmpty) {
-      return userDoc.docs.first.id;
+    if (teacherSnapshot.docs.isEmpty) {
+      throw Exception('Teacher not found');
     }
-    return null;
-  }
+    final teacherDocId = teacherSnapshot.docs.first.id;
 
-  Future<Map<String, List<Map<String, dynamic>>>> fetchStudents() async {
+    // Fetch active students, grouped by class
     final studentsSnapshot = await _firestore
         .collection('students')
-        .where('isActive', isEqualTo: true) // Fetch only active students
+        .where('isActive', isEqualTo: true)
         .get();
 
     Map<String, List<Map<String, dynamic>>> groupedStudents = {};
@@ -44,7 +45,11 @@ class FirebaseService {
         'class': className,
       });
     }
-    return groupedStudents;
+
+    return {
+      'teacherDocId': teacherDocId,
+      'students': groupedStudents,
+    };
   }
 
   Future<void> addStudents(

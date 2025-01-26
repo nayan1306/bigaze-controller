@@ -17,28 +17,22 @@ class _AddMailState extends State<AddGroup> {
   @override
   void initState() {
     super.initState();
-    _fetchTeacherDocId();
-    _fetchStudents();
+    _fetchTeacherAndStudents();
   }
 
-  Future<void> _fetchTeacherDocId() async {
-    final docId = await _firebaseService.fetchTeacherDocId();
-    if (docId != null) {
+  // Fetch teacher document and students in a single request
+  Future<void> _fetchTeacherAndStudents() async {
+    try {
+      final result = await _firebaseService.fetchTeacherAndStudents();
       setState(() {
-        teacherDocId = docId;
+        teacherDocId = result['teacherDocId'];
+        _studentsByClass = result['students'];
       });
-    } else {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No user logged in!')),
+        SnackBar(content: Text('Error: $e')),
       );
     }
-  }
-
-  Future<void> _fetchStudents() async {
-    final groupedStudents = await _firebaseService.fetchStudents();
-    setState(() {
-      _studentsByClass = groupedStudents;
-    });
   }
 
   Future<void> _addStudents() async {
