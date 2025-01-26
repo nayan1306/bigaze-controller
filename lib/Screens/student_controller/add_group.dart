@@ -1,7 +1,4 @@
-import 'dart:developer';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:examiner_bigaze/firebase/firebase_service.dart';
 import 'package:flutter/material.dart';
 
 class AddGroup extends StatefulWidget {
@@ -12,67 +9,35 @@ class AddGroup extends StatefulWidget {
 }
 
 class _AddMailState extends State<AddGroup> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
+  final FirebaseService _firebaseService = FirebaseService();
   final List<Map<String, String>> _studentsToAdd = [];
   Map<String, List<Map<String, dynamic>>> _studentsByClass = {};
-
   String? teacherDocId;
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchTeacherDocId();
+    _fetchStudents();
+  }
+
   Future<void> _fetchTeacherDocId() async {
-    final currentUser = _firebaseAuth.currentUser;
-    if (currentUser == null) {
+    final docId = await _firebaseService.fetchTeacherDocId();
+    if (docId != null) {
+      setState(() {
+        teacherDocId = docId;
+      });
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No user logged in!')),
       );
-      return;
-    }
-
-    final userDoc = await _firestore
-        .collection('teacher')
-        .where('email', isEqualTo: currentUser.email)
-        .get();
-
-    if (userDoc.docs.isNotEmpty) {
-      setState(() {
-        teacherDocId = userDoc.docs.first.id;
-      });
     }
   }
 
-  // Optimized method to fetch and group students by class
   Future<void> _fetchStudents() async {
-    final studentsSnapshot = await _firestore
-        .collection('students')
-        .where('isActive',
-            isEqualTo: true) // Optimized: Only fetch active students
-        .get();
-
-    log('Fetched Students: ${studentsSnapshot.docs.length} students found.');
-
-    Map<String, List<Map<String, dynamic>>> groupedStudents = {};
-    for (var doc in studentsSnapshot.docs) {
-      final studentData = doc.data();
-      log('Student Data: ${studentData.toString()}');
-
-      final className = studentData['class'].toString();
-
-      if (!groupedStudents.containsKey(className)) {
-        groupedStudents[className] = [];
-      }
-
-      groupedStudents[className]!.add({
-        'id': doc.id,
-        'name': studentData['name'],
-        'email': studentData['email'],
-        'class': className,
-      });
-    }
-
+    final groupedStudents = await _firebaseService.fetchStudents();
     setState(() {
       _studentsByClass = groupedStudents;
-      log('Grouped Students: $_studentsByClass');
     });
   }
 
@@ -84,37 +49,21 @@ class _AddMailState extends State<AddGroup> {
       return;
     }
 
-    try {
-      final collectionRef = _firestore.collection('teacher');
-      final batch = _firestore.batch();
-
-      for (var student in _studentsToAdd) {
-        final docRef =
-            collectionRef.doc(teacherDocId).collection('students').doc();
-        batch.set(docRef, student);
+    if (teacherDocId != null) {
+      try {
+        await _firebaseService.addStudents(teacherDocId!, _studentsToAdd);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Students added successfully!')),
+        );
+        setState(() {
+          _studentsToAdd.clear();
+        });
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error adding students: $e')),
+        );
       }
-
-      await batch.commit();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Students added successfully!')),
-      );
-
-      setState(() {
-        _studentsToAdd.clear();
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error adding students: $e')),
-      );
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchTeacherDocId();
-    _fetchStudents();
   }
 
   @override
@@ -194,13 +143,11 @@ class _AddMailState extends State<AddGroup> {
                 ElevatedButton(
                   onPressed: _addStudents,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        const Color.fromARGB(255, 232, 255, 225), // Neon purple
+                    backgroundColor: const Color.fromARGB(255, 232, 255, 225),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24.0, vertical: 12.0),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(8.0), // Rounded corners
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
                   child: const Text(
