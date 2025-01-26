@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:examiner_bigaze/Screens/student_controller/add_group.dart';
 import 'package:examiner_bigaze/Screens/student_controller/add_mail.dart';
 import 'package:examiner_bigaze/Screens/student_controller/qr_generator.dart';
+import 'package:examiner_bigaze/Screens/student_controller/student_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -52,10 +53,46 @@ class _StudentControllerState extends State<StudentController> {
             'id': doc.id,
             'name': studentData['name'],
             'email': studentData['email'],
-            'class': studentData['class'],
           };
         }).toList();
       });
+    }
+  }
+
+  // Function to remove a student from the list
+  void _removeStudent(Map<String, String> student) async {
+    final currentUser = _firebaseAuth.currentUser;
+
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No user logged in!')),
+      );
+      return;
+    }
+
+    // Fetch the teacher's document ID from Firestore
+    final userDoc = await _firestore
+        .collection('teacher')
+        .where('email', isEqualTo: currentUser.email)
+        .get();
+
+    if (userDoc.docs.isNotEmpty) {
+      final teacherDocId = userDoc.docs.first.id;
+
+      // Remove the student from the teacher's students collection
+      await _firestore
+          .collection('teacher')
+          .doc(teacherDocId)
+          .collection('students')
+          .doc(student['id'])
+          .delete();
+
+      // Refresh the students list after deletion
+      _fetchStudents();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Student removed successfully!')),
+      );
     }
   }
 
@@ -71,9 +108,7 @@ class _StudentControllerState extends State<StudentController> {
       body: Center(
         child: Column(
           children: [
-            const SizedBox(
-              height: 30,
-            ),
+            const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -83,7 +118,8 @@ class _StudentControllerState extends State<StudentController> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const QrCodeGenerator()),
+                        builder: (context) => const QrCodeGenerator(),
+                      ),
                     );
                   },
                   icon: const Icon(Icons.qr_code),
@@ -112,23 +148,13 @@ class _StudentControllerState extends State<StudentController> {
                 ),
               ],
             ),
-            Expanded(
-              child: _students.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      itemCount: _students.length,
-                      itemBuilder: (context, index) {
-                        final student = _students[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: ListTile(
-                            title: Text(student['name'] ?? 'No Name'),
-                            subtitle: Text(student['email'] ?? 'No Email'),
-                            tileColor: const Color.fromARGB(255, 42, 42, 42),
-                          ),
-                        );
-                      },
-                    ),
+            // Pass the _removeStudent function to StudentList
+            StudentList(
+              students: _students
+                  .map((student) => student
+                      .map((key, value) => MapEntry(key, value.toString())))
+                  .toList(),
+              onRemoveStudent: _removeStudent,
             ),
           ],
         ),
