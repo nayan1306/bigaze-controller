@@ -22,8 +22,8 @@ class CustomQrCode extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 colors: [
-                  Color.fromARGB(147, 236, 225, 255),
-                  Color.fromARGB(147, 240, 155, 255),
+                  Color.fromARGB(170, 209, 209, 209),
+                  Color.fromARGB(200, 245, 188, 255),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,

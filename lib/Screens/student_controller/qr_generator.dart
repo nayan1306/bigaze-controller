@@ -1,12 +1,24 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:examiner_bigaze/Screens/student_controller/custom_qr_code.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_code_to_image/qr_code_to_image.dart';
 
-class QrCodeGenerator extends StatelessWidget {
+class QrCodeGenerator extends StatefulWidget {
   const QrCodeGenerator({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<QrCodeGenerator> createState() => _QrCodeGeneratorState();
+}
+
+class _QrCodeGeneratorState extends State<QrCodeGenerator> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showQrCodeScreen();
+    });
+  }
+
+  void _showQrCodeScreen() {
     // Get the current user from Firebase Authentication
     final user = FirebaseAuth.instance.currentUser;
 
@@ -18,24 +30,22 @@ class QrCodeGenerator extends StatelessWidget {
       'email': user?.email ?? 'No Email',
     };
 
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CustomQrCode(
-                data: userData.toString(), // Pass the JSON as a string
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('Share QR Code'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    // Automatically show the QR code screen
+    QrCodeToImage.showQrCodeScreen(
+      context,
+      textQrCode: userData.toString(), // QR data
+      textButton: "Share",
+      colorWidgetTest: Colors.blue, // Customize button color
+    ).then((_) {
+      // Close the widget once the QR code screen is dismissed
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox.shrink(); // Minimal widget as no UI is needed
   }
 }
