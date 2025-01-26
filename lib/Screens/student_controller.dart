@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:examiner_bigaze/Screens/student_controller/add_group.dart';
+import 'package:examiner_bigaze/Screens/student_controller/add_mail.dart';
 import 'package:examiner_bigaze/Screens/student_controller/qr_generator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -97,13 +98,16 @@ class _StudentControllerState extends State<StudentController> {
                   icon: const Icon(Icons.group_add),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const AddMail()),
+                    );
+                  },
                   icon: const Icon(Icons.mail),
                 ),
                 IconButton(
-                  onPressed: () {
-                    // Action for person add button
-                  },
+                  onPressed: () {},
                   icon: const Icon(Icons.notifications_active_outlined),
                 ),
               ],
