@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class SendNotificationPage extends StatefulWidget {
   const SendNotificationPage({super.key});
@@ -14,12 +15,46 @@ class _SendNotificationPageState extends State<SendNotificationPage> {
   final TextEditingController _messageController = TextEditingController();
   String _selectedAudience = "All Participants";
   String? _deviceToken;
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   @override
   void initState() {
     super.initState();
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    _initializeNotifications();
     _getDeviceToken();
     _listenForNotifications();
+  }
+
+  // Initialize local notifications
+  Future<void> _initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  // Show a local notification
+  Future<void> _showLocalNotification(String title, String message) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'your_channel_id',
+      'your_channel_name',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      title,
+      message,
+      platformChannelSpecifics,
+      payload: 'item x',
+    );
   }
 
   // Get the device token
@@ -44,9 +79,10 @@ class _SendNotificationPageState extends State<SendNotificationPage> {
   void _listenForNotifications() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (message.notification != null) {
-        // Show a snack bar or dialog to display the notification
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message.notification!.body ?? 'No message')),
+        // Show a local notification in the system tray
+        _showLocalNotification(
+          message.notification!.title ?? 'No Title',
+          message.notification!.body ?? 'No message',
         );
       }
     });
