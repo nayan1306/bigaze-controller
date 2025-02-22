@@ -132,3 +132,14 @@ icons_launcher:
       adaptive_background_color: '#000000'
     ios:
       enable: true
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/plogo.png"
+  min_sdk_android: 21
+  adaptive_icon_foreground: "assets/plogo.png"  # Foreground image
+  adaptive_icon_background: "#000000"  # Solid black background
+
+  
+     
