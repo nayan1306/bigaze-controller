@@ -116,12 +116,12 @@ class _StudentControllerState extends State<StudentController> {
                 IconButton(
                   onPressed: () {
                     // Action for QR code button
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const QrCodeGenerator(),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => const QrCodeGenerator(),
+                    //   ),
+                    // );
                   },
                   icon: const Icon(Icons.qr_code),
                 ),

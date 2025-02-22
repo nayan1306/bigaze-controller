@@ -1,0 +1,2 @@
+E:/Proctor/BiGaze-app/Contoller/examiner_bigaze/android/app/.cxx/Debug/6v172o5l/x86_64/CMakeFiles/edit_cache.dir
+E:/Proctor/BiGaze-app/Contoller/examiner_bigaze/android/app/.cxx/Debug/6v172o5l/x86_64/CMakeFiles/rebuild_cache.dir

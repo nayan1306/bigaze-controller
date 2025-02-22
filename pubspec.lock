@@ -350,14 +350,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_barcode_scanner:
-    dependency: transitive
-    description:
-      name: flutter_barcode_scanner
-      sha256: a4ba37daf9933f451a5e812c753ddd045d6354e4a3280342d895b07fecaab3fa
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   flutter_launcher_icons:
     dependency: "direct main"
     description:
@@ -789,38 +781,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.2"
-  qr:
-    dependency: transitive
-    description:
-      name: qr
-      sha256: "5a1d2586170e172b8a8c8470bbbffd5eb0cd38a66c0d77155ea138d3af3a4445"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.2"
-  qr_code_to_image:
-    dependency: "direct main"
-    description:
-      name: qr_code_to_image
-      sha256: "50d4caf3f1149a6e43c80ec28379fa5bbe4bfbf80930b2e6a8f6a99c6c938b0e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.3"
-  qr_flutter:
-    dependency: "direct main"
-    description:
-      name: qr_flutter
-      sha256: "5095f0fc6e3f71d08adef8feccc8cea4f12eec18a2e31c2e8d82cb6019f4b097"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.1.0"
-  share:
-    dependency: transitive
-    description:
-      name: share
-      sha256: "97e6403f564ed1051a01534c2fc919cb6e40ea55e60a18ec23cee6e0ce19f4be"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.4"
   sky_engine:
     dependency: transitive
     description: flutter
