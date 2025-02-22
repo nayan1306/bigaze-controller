@@ -31,6 +31,7 @@ dependencies:
   # share_plus: ^10.1.4
   # qr_code_to_image: ^0.0.3
   flutter_local_notifications: ^18.0.1
+  table_calendar: ^3.1.3
   
 
 
@@ -63,6 +64,7 @@ flutter:
   - assets/icon/google.png
   - assets/plogo.png
   - assets/icon/live.gif
+  - assets/icon/exam-time.png
 
 
 
