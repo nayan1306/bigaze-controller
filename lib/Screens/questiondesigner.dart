@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:examiner_bigaze/Screens/quiz_creator/quiz_create_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../quizcreatepage.dart';
@@ -115,7 +116,7 @@ class QuestionDesigner extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CreateQuizPage(
+                          builder: (context) => QuizCreatePage(
                             examId: exam['examId'],
                             teacherDocId:
                                 exam['teacherDocId'], // Pass teacherDocId
