@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:developer';
+// import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -156,7 +156,7 @@ class _InteractiveQuizPageState extends State<InteractiveQuizPage> {
   /// Builds a widget for a single option.
   Widget _buildOption(int questionIndex, String optionKey, String optionText) {
     int optionValue = int.tryParse(optionKey) ?? 0;
-    bool isSelected = studentAnswers[questionIndex] == optionValue;
+    // bool isSelected = studentAnswers[questionIndex] == optionValue;
     bool showCorrect = isSubmitted;
     bool isCorrect = optionValue == questions[questionIndex]["answer"];
 

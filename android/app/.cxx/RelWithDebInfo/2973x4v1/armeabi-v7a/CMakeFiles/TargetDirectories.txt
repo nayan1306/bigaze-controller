@@ -1,0 +1,2 @@
+E:/Proctor/BiGaze-app/Contoller/examiner_bigaze/android/app/.cxx/RelWithDebInfo/2973x4v1/armeabi-v7a/CMakeFiles/edit_cache.dir
+E:/Proctor/BiGaze-app/Contoller/examiner_bigaze/android/app/.cxx/RelWithDebInfo/2973x4v1/armeabi-v7a/CMakeFiles/rebuild_cache.dir

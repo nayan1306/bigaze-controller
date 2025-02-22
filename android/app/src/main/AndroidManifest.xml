@@ -1,4 +1,8 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.bigaze.examiner">
+    <!-- ... -->
+
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -12,7 +16,7 @@
     <application
         android:label="BiG∆ZE MΞNTOR"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/ic_launcher">
 
         
         
@@ -39,7 +43,8 @@
         <!-- Firebase services for push notifications -->
         <service
             android:name="com.google.firebase.messaging.FirebaseMessagingService"
-            android:exported="true">
+            android:exported="true"
+            tools:replace="android:exported">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>

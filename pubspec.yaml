@@ -15,7 +15,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   firebase_core: ^3.10.0
   cloud_firestore: ^5.5.0
-  flutter_launcher_icons: ^0.14.1
   icons_launcher: ^3.0.0
   firebase_messaging: ^15.1.5
   multi_select_flutter: ^4.1.3
@@ -69,13 +68,15 @@ flutter:
 
 
 
-flutter_launcher_icons:
-  android: true
-  ios: true
+icons_launcher:
   image_path: "assets/plogo.png"
-  min_sdk_android: 21
-  adaptive_icon_foreground: "assets/plogo.png"  # Foreground image
-  adaptive_icon_background: "#000000"  # Solid black background
-
-  
-     
+  platforms:
+    android:
+      enable: true
+      image_path: "assets/plogo.png"
+      adaptive_background_color: '#000000'
+      # adaptive_background_image: "assets/ic_background.png"
+      adaptive_foreground_image: "assets/plogo.png"
+      # adaptive_round_image: "assets/ic_logo_round.png"
+      # adaptive_monochrome_image: "assets/ic_black_white.png"
+   
