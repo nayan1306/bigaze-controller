@@ -123,7 +123,7 @@ class _ExamListPageState extends State<ExamListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Exam Calendar'),
+        title: const Text('Scheduled Exams'),
       ),
       // Wrap the body in a GestureDetector to collapse the calendar when tapping outside.
       body: StreamBuilder<QuerySnapshot>(
@@ -202,8 +202,8 @@ class _ExamListPageState extends State<ExamListPage> {
                           bottom: 1,
                           child: Image.asset(
                             'assets/icon/exam-time.png',
-                            width: 20,
-                            height: 20,
+                            width: 22,
+                            height: 22,
                           ),
                         );
                       }
@@ -284,7 +284,17 @@ class _ExamListPageState extends State<ExamListPage> {
                                         margin: const EdgeInsets.symmetric(
                                             vertical: 8, horizontal: 16),
                                         child: ListTile(
-                                          title: Text(examName),
+                                          title: Row(
+                                            children: [
+                                              Image.asset(
+                                                'assets/icon/exam-time.png',
+                                                width: 30,
+                                                height: 30,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(examName),
+                                            ],
+                                          ),
                                           subtitle: Text(
                                               'Type: $examType\nDuration: $duration minutes\nStart At: $startAt\nInstructions: $instructions'),
                                           trailing: IconButton(
