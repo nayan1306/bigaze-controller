@@ -16,8 +16,8 @@ class QuestionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
-      color: Colors.grey[900], // Dark card background
+      elevation: 3,
+      color: Colors.grey[900], // dark-themed card background
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -26,6 +26,17 @@ class QuestionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Editable Question Number
+            _buildTextField(
+              label: 'Question Number',
+              keyboardType: TextInputType.number,
+              initialValue: question["number"]?.toString() ?? '',
+              onChanged: (value) => onQuestionChanged(
+                "number",
+                int.tryParse(value) ?? question["number"],
+              ),
+            ),
+            const SizedBox(height: 12),
             _buildTextField(
               label: 'Question',
               initialValue: question["question"],
@@ -62,7 +73,7 @@ class QuestionCard extends StatelessWidget {
               label: 'Difficulty',
               value: ['Easy', 'Medium', 'Hard'].contains(question["difficulty"])
                   ? question["difficulty"]
-                  : 'Easy', // Default to 'Easy' if invalid
+                  : 'Easy',
               items: ['Easy', 'Medium', 'Hard'],
               onChanged: (value) => onQuestionChanged("difficulty", value),
             ),
@@ -97,7 +108,7 @@ class QuestionCard extends StatelessWidget {
     );
   }
 
-  /// Builds a dark-themed text field with rounded borders
+  /// Builds a dark-themed text field with rounded borders.
   Widget _buildTextField({
     required String label,
     String? initialValue,
@@ -109,13 +120,12 @@ class QuestionCard extends StatelessWidget {
       initialValue: initialValue,
       keyboardType: keyboardType,
       maxLines: maxLines,
-      style: const TextStyle(color: Colors.white), // White text color
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle:
-            const TextStyle(color: Colors.white70), // Slightly dimmed text
+        labelStyle: const TextStyle(color: Colors.white70),
         filled: true,
-        fillColor: Colors.grey[800], // Darker background
+        fillColor: Colors.grey[800],
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         focusedBorder: OutlineInputBorder(
           borderSide: const BorderSide(color: Colors.blue, width: 1.5),
@@ -126,7 +136,7 @@ class QuestionCard extends StatelessWidget {
     );
   }
 
-  /// Builds a dark-themed dropdown for selecting difficulty
+  /// Builds a dark-themed dropdown for selecting difficulty.
   Widget _buildDropdown({
     required String label,
     required String value,
@@ -135,8 +145,8 @@ class QuestionCard extends StatelessWidget {
   }) {
     return DropdownButtonFormField<String>(
       value: value,
-      dropdownColor: Colors.grey[900], // Dark background for dropdown
-      style: const TextStyle(color: Colors.white), // White text
+      dropdownColor: Colors.grey[900],
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(color: Colors.white70),
@@ -145,10 +155,8 @@ class QuestionCard extends StatelessWidget {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       ),
       items: items
-          .map((difficulty) => DropdownMenuItem(
-                value: difficulty,
-                child: Text(difficulty),
-              ))
+          .map((difficulty) =>
+              DropdownMenuItem(value: difficulty, child: Text(difficulty)))
           .toList(),
       onChanged: (newValue) {
         if (newValue != null) {
@@ -158,11 +166,10 @@ class QuestionCard extends StatelessWidget {
     );
   }
 
-  /// Builds an image upload button with dark mode styling
+  /// Builds an image upload button with dark mode styling.
   Widget _buildImageUploadButton(BuildContext context) {
     return TextButton.icon(
       onPressed: () {
-        // TODO: Implement Image Picker functionality
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Image Upload Not Implemented')),
         );

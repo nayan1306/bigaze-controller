@@ -21,19 +21,31 @@ class QuizCreatePage extends StatefulWidget {
 
 class _QuizCreatePageState extends State<QuizCreatePage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  List<Map<String, dynamic>> questions = [];
 
-  // Add a new question
-  void addQuestion() {
+  // Local unsaved questions added in the current session.
+  List<Map<String, dynamic>> localQuestions = [];
+
+  /// Returns a stream of saved questions from Firestore,
+  /// ordered by 'createdAt' (oldest first).
+  Stream<QuerySnapshot> getSavedQuestionsStream() {
+    DocumentReference examRef = _firestore
+        .collection('teacher')
+        .doc(widget.teacherDocId)
+        .collection('exams')
+        .doc(widget.examId);
+    return examRef
+        .collection('questions')
+        .orderBy('createdAt', descending: false)
+        .snapshots();
+  }
+
+  /// Adds a new unsaved question locally.
+  void addLocalQuestion() {
     setState(() {
-      questions.add({
+      localQuestions.add({
+        "number": localQuestions.length + 1, // auto numbering based on count
         "question": "",
-        "options": {
-          "1": "",
-          "2": "",
-          "3": "",
-          "4": "",
-        },
+        "options": {"1": "", "2": "", "3": "", "4": ""},
         "answer": 0,
         "ansExplanation": "",
         "difficulty": "medium",
@@ -44,22 +56,22 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
     });
   }
 
-  // Update a question field
-  void updateQuestion(int index, String field, dynamic value) {
+  /// Updates a field of a local (unsaved) question.
+  void updateLocalQuestion(int index, String field, dynamic value) {
     setState(() {
-      questions[index][field] = value;
+      localQuestions[index][field] = value;
     });
   }
 
-  // Update a specific option for a question
-  void updateOption(int questionIndex, String optionKey, String value) {
+  /// Updates an option for a local question.
+  void updateLocalOption(int questionIndex, String optionKey, String value) {
     setState(() {
-      questions[questionIndex]["options"][optionKey] = value;
+      localQuestions[questionIndex]["options"][optionKey] = value;
     });
   }
 
-  // Save quiz to Firestore
-  Future<void> saveQuiz() async {
+  /// Saves all unsaved (local) questions to Firestore.
+  Future<void> saveLocalQuestions() async {
     try {
       DocumentReference examRef = _firestore
           .collection('teacher')
@@ -67,7 +79,7 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
           .collection('exams')
           .doc(widget.examId);
 
-      // Create exam document if it doesn't exist
+      // Create exam document if it doesn't exist.
       if (!(await examRef.get()).exists) {
         await examRef.set({
           'createdAt': FieldValue.serverTimestamp(),
@@ -75,9 +87,9 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
         });
       }
 
-      // Add questions to the 'questions' sub-collection
-      for (var question in questions) {
+      for (var question in localQuestions) {
         await examRef.collection('questions').add({
+          "number": question["number"],
           "question": question["question"],
           "options": question["options"],
           "answer": question["answer"],
@@ -86,13 +98,13 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
           "imageUrl": question["imageUrl"],
           "marks": question["marks"],
           "tags": question["tags"],
+          "createdAt": FieldValue.serverTimestamp(),
         });
         log("Question added to exam ${widget.examId}");
       }
 
-      // Clear fields after saving
       setState(() {
-        questions.clear();
+        localQuestions.clear();
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -110,32 +122,66 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Add Questions to Quiz')),
-      // The body contains a scrollable list of question cards.
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: questions.isEmpty
-            ? Center(
+        // Use a StreamBuilder to listen to saved questions.
+        child: StreamBuilder<QuerySnapshot>(
+          stream: getSavedQuestionsStream(),
+          builder: (context, snapshot) {
+            List<Map<String, dynamic>> savedQuestions = [];
+            if (snapshot.hasData) {
+              savedQuestions = snapshot.data!.docs
+                  .map((doc) => doc.data() as Map<String, dynamic>)
+                  .toList();
+            }
+            // Combine saved and unsaved questions.
+            List<Map<String, dynamic>> allQuestions = [
+              ...savedQuestions,
+              ...localQuestions
+            ];
+            // Sort by question number.
+            allQuestions.sort(
+                (a, b) => (a["number"] as int).compareTo(b["number"] as int));
+
+            if (allQuestions.isEmpty) {
+              return Center(
                 child: Text(
                   'No questions added yet.',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-              )
-            : ListView.separated(
-                itemCount: questions.length,
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 20),
-                itemBuilder: (context, index) {
-                  return QuestionCard(
-                    question: questions[index],
-                    onQuestionChanged: (field, value) =>
-                        updateQuestion(index, field, value),
-                    onOptionChanged: (optionKey, value) =>
-                        updateOption(index, optionKey, value),
-                  );
-                },
-              ),
+              );
+            }
+            return ListView.separated(
+              itemCount: allQuestions.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 20),
+              itemBuilder: (context, index) {
+                return QuestionCard(
+                  question: allQuestions[index],
+                  onQuestionChanged: (field, value) {
+                    // Allow editing only for unsaved (local) questions.
+                    int localIndex = localQuestions.indexWhere(
+                        (q) => q["number"] == allQuestions[index]["number"]);
+                    if (localIndex != -1) {
+                      updateLocalQuestion(localIndex, field, value);
+                    } else {
+                      // Optionally, implement update functionality for saved questions.
+                    }
+                  },
+                  onOptionChanged: (optionKey, value) {
+                    int localIndex = localQuestions.indexWhere(
+                        (q) => q["number"] == allQuestions[index]["number"]);
+                    if (localIndex != -1) {
+                      updateLocalOption(localIndex, optionKey, value);
+                    } else {
+                      // Optionally, implement update functionality for saved questions.
+                    }
+                  },
+                );
+              },
+            );
+          },
+        ),
       ),
-      // Fixed action buttons at the bottom of the screen.
       bottomNavigationBar: Container(
         color: const Color.fromARGB(100, 28, 28, 28),
         padding: const EdgeInsets.all(16.0),
@@ -143,6 +189,7 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // First row: Add and Save buttons.
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -150,21 +197,19 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                     label: 'Add Question',
                     icon: Icons.add,
                     backgroundColor: const Color.fromARGB(255, 154, 178, 104),
-                    onPressed: addQuestion,
+                    onPressed: addLocalQuestion,
                   ),
-                  const SizedBox(
-                    height: 10,
-                    width: 10,
-                  ),
+                  const SizedBox(width: 10),
                   QuizActionButton(
-                    label: 'Save ',
+                    label: 'Save',
                     icon: Icons.save,
                     backgroundColor: const Color.fromARGB(255, 129, 198, 255),
-                    onPressed: saveQuiz,
+                    onPressed: saveLocalQuestions,
                   ),
                 ],
               ),
               const SizedBox(height: 10),
+              // Second row: Preview and Proctor buttons.
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -184,10 +229,7 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                       );
                     },
                   ),
-                  const SizedBox(
-                    height: 10,
-                    width: 10,
-                  ),
+                  const SizedBox(width: 10),
                   QuizActionButton(
                     label: 'Proctor',
                     icon: Icons.settings,
@@ -236,7 +278,7 @@ class QuizActionButton extends StatelessWidget {
       icon: Icon(icon, color: Colors.white),
       label: Text(label, style: const TextStyle(color: Colors.white)),
       style: ElevatedButton.styleFrom(
-        fixedSize: const Size(155, 25),
+        fixedSize: const Size(155, 40),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
