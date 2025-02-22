@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:examiner_bigaze/testlist.dart';
+import 'package:examiner_bigaze/exam_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -85,7 +85,7 @@ class _ExamControllerScreenState extends State<ExamControllerScreen> {
 
           // If no live exam, navigate to TestListPage
           if (!snapshot.hasData || snapshot.data == null) {
-            return const TestListPage(); // Display the test list page
+            return const ExamListPage(); // Display the test list page
           }
 
           // If live exam is found, show its details

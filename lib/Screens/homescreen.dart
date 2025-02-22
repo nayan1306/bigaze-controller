@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 // import 'package:examiner_bigaze/quizmanager.dart';
 import 'package:examiner_bigaze/sendnotificationpage.dart';
 import 'package:examiner_bigaze/schedule_exam_page.dart';
-import 'package:examiner_bigaze/testlist.dart';
+import 'package:examiner_bigaze/exam_list.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -92,7 +92,7 @@ class HomeScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ExamListPage(),
+                            builder: (context) => QuestionDesigner(),
                           ),
                         );
                       },
@@ -105,7 +105,7 @@ class HomeScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const TestListPage(),
+                            builder: (context) => const ExamListPage(),
                           ),
                         );
                       },

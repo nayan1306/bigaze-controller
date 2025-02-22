@@ -3,11 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../quizcreatepage.dart';
 
-class ExamListPage extends StatelessWidget {
+class QuestionDesigner extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  ExamListPage({super.key});
+  QuestionDesigner({super.key});
 
   // Fetch exams from Firestore dynamically for the current logged-in user
   Future<List<Map<String, dynamic>>> fetchExams() async {
